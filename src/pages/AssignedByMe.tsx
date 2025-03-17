@@ -1,20 +1,20 @@
 
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TodoList } from "@/components/todo/TodoList";
-import { getTodosAssignedToMe } from "@/lib/sample-data";
+import { getTodosAssignedByMe } from "@/lib/sample-data";
 
-const Index = () => {
-  const todos = getTodosAssignedToMe();
+const AssignedByMe = () => {
+  const todos = getTodosAssignedByMe();
   
   return (
     <AppLayout>
       <TodoList 
         todos={todos} 
-        type="assignedToMe" 
+        type="assignedByMe" 
         className="animate-slide-up"
       />
     </AppLayout>
   );
 };
 
-export default Index;
+export default AssignedByMe;
