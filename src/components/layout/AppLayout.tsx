@@ -2,11 +2,25 @@
 import { Archive, ClipboardCheck, ListChecks, Plus } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { AnimatedTabs } from "../ui/animated-tabs";
-import { Button } from "@/components/ui/button";
-import { CreateTodoModal } from "../todo/CreateTodoModal";
 import { Todo, User } from "@/types/todo";
 import { getUserById } from "@/lib/sample-data";
 import { toast } from "sonner";
+import { CreateTodoModal } from "../todo/CreateTodoModal";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -14,6 +28,8 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   
   const handleCreateTodo = (description: string, assignedTo: User, dueDate: Date, priority: string) => {
     // In a real app, this would call an API to create the todo
@@ -36,50 +52,77 @@ export function AppLayout({ children }: AppLayoutProps) {
       toast.success("Task created successfully!");
     }
   };
+
+  const menuItems = [
+    {
+      title: "Assigned to me",
+      path: "/",
+      icon: ClipboardCheck,
+      isActive: location.pathname === "/"
+    },
+    {
+      title: "Assigned by me",
+      path: "/assigned-by-me",
+      icon: ListChecks,
+      isActive: location.pathname === "/assigned-by-me"
+    },
+    {
+      title: "Archived",
+      path: "/archived",
+      icon: Archive,
+      isActive: location.pathname === "/archived"
+    },
+    {
+      title: "Create new task",
+      path: "#create-task",
+      icon: Plus,
+      isActive: false,
+      onClick: () => setIsCreateModalOpen(true)
+    }
+  ];
   
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-md px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">TaskFlow</h1>
+    <SidebarProvider defaultOpen={false}>
+      <div className="flex min-h-screen bg-background w-full">
+        <Sidebar side="left" variant="floating">
+          <SidebarHeader>
+            <div className="flex items-center justify-between p-2">
+              <h1 className="text-xl font-semibold tracking-tight">TaskFlow</h1>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Tasks</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton 
+                        isActive={item.isActive} 
+                        onClick={() => item.onClick ? item.onClick() : navigate(item.path)}
+                        tooltip={item.title}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter>
+            <div className="p-2">
+              <Button variant="outline" className="w-full">
+                <span className="truncate">Settings</span>
+              </Button>
+            </div>
+          </SidebarFooter>
+        </Sidebar>
+        
+        <div className="flex-1 p-4">
+          <main>{children}</main>
         </div>
-        
-        <div className="mb-6">
-          <AnimatedTabs
-            tabs={[
-              {
-                label: "Assigned to me",
-                value: "assignedToMe",
-                path: "/",
-                icon: <ClipboardCheck className="h-4 w-4" />,
-              },
-              {
-                label: "Assigned by me",
-                value: "assignedByMe",
-                path: "/assigned-by-me",
-                icon: <ListChecks className="h-4 w-4" />,
-              },
-              {
-                label: "Archived",
-                value: "archived",
-                path: "/archived",
-                icon: <Archive className="h-4 w-4" />,
-              },
-            ]}
-            className="w-full max-w-md bg-secondary rounded-full"
-          />
-        </div>
-        
-        <main>{children}</main>
-        
-        <Button
-          size="icon"
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <Plus className="h-6 w-6" />
-          <span className="sr-only">Create new task</span>
-        </Button>
         
         <CreateTodoModal
           isOpen={isCreateModalOpen}
@@ -87,6 +130,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           onCreateTodo={handleCreateTodo}
         />
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

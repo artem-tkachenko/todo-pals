@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import AssignedByMe from "./pages/AssignedByMe";
 import Archived from "./pages/Archived";
 import NotFound from "./pages/NotFound";
+import "./App.css";
 
 const queryClient = new QueryClient();
 
@@ -15,7 +16,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner position="top-center" />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
