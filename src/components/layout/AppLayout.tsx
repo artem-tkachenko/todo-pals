@@ -1,5 +1,5 @@
 
-import { ClipboardCheck, ListChecks, Plus } from "lucide-react";
+import { Archive, ClipboardCheck, ListChecks, Plus } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { AnimatedTabs } from "../ui/animated-tabs";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         assignedTo,
         priority: priority as "low" | "medium" | "high",
         createdAt: new Date(),
+        archived: false
       };
       
       console.log("Created new todo:", newTodo);
@@ -57,6 +58,12 @@ export function AppLayout({ children }: AppLayoutProps) {
                 value: "assignedByMe",
                 path: "/assigned-by-me",
                 icon: <ListChecks className="h-4 w-4" />,
+              },
+              {
+                label: "Archived",
+                value: "archived",
+                path: "/archived",
+                icon: <Archive className="h-4 w-4" />,
               },
             ]}
             className="w-full max-w-md bg-secondary rounded-full"

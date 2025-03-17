@@ -15,4 +15,5 @@ export interface Todo {
   assignedTo: User;
   priority: 'low' | 'medium' | 'high';
   createdAt: Date;
+  archived: boolean;
 }

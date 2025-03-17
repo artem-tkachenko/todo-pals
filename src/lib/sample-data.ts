@@ -1,5 +1,6 @@
 
 import { Todo, User } from "../types/todo";
+import { toast } from "sonner";
 
 export const users: User[] = [
   {
@@ -41,7 +42,7 @@ const dateOffset = (days: number): Date => {
   return date;
 };
 
-export const todos: Todo[] = [
+export let todos: Todo[] = [
   {
     id: "1",
     description: "Finalize project proposal for client meeting",
@@ -50,7 +51,8 @@ export const todos: Todo[] = [
     assignedBy: users[2], // Morgan
     assignedTo: users[0], // You
     priority: "high",
-    createdAt: dateOffset(-2)
+    createdAt: dateOffset(-2),
+    archived: false
   },
   {
     id: "2",
@@ -60,7 +62,8 @@ export const todos: Todo[] = [
     assignedBy: users[1], // Alex
     assignedTo: users[0], // You
     priority: "medium",
-    createdAt: dateOffset(-1)
+    createdAt: dateOffset(-1),
+    archived: false
   },
   {
     id: "3",
@@ -70,7 +73,8 @@ export const todos: Todo[] = [
     assignedBy: users[4], // Casey
     assignedTo: users[0], // You
     priority: "high",
-    createdAt: dateOffset(-3)
+    createdAt: dateOffset(-3),
+    archived: false
   },
   {
     id: "4",
@@ -80,7 +84,8 @@ export const todos: Todo[] = [
     assignedBy: users[2], // Morgan
     assignedTo: users[0], // You
     priority: "medium",
-    createdAt: dateOffset(-4)
+    createdAt: dateOffset(-4),
+    archived: false
   },
   {
     id: "5",
@@ -90,7 +95,8 @@ export const todos: Todo[] = [
     assignedBy: users[3], // Jamie
     assignedTo: users[0], // You
     priority: "low",
-    createdAt: dateOffset(-1)
+    createdAt: dateOffset(-1),
+    archived: false
   },
   {
     id: "6",
@@ -100,7 +106,8 @@ export const todos: Todo[] = [
     assignedTo: users[2], // Morgan
     assignedBy: users[0], // You
     priority: "medium",
-    createdAt: dateOffset(-5)
+    createdAt: dateOffset(-5),
+    archived: false
   },
   {
     id: "7",
@@ -110,7 +117,8 @@ export const todos: Todo[] = [
     assignedTo: users[1], // Alex
     assignedBy: users[0], // You
     priority: "high",
-    createdAt: dateOffset(-2)
+    createdAt: dateOffset(-2),
+    archived: false
   },
   {
     id: "8",
@@ -120,18 +128,27 @@ export const todos: Todo[] = [
     assignedTo: users[4], // Casey
     assignedBy: users[0], // You
     priority: "low",
-    createdAt: dateOffset(-3)
+    createdAt: dateOffset(-3),
+    archived: false
   }
 ];
 
 // Get todos assigned to "You"
 export const getTodosAssignedToMe = (): Todo[] => {
-  return todos.filter(todo => todo.assignedTo.id === "1");
+  return todos.filter(todo => todo.assignedTo.id === "1" && !todo.archived);
 };
 
 // Get todos assigned by "You"
 export const getTodosAssignedByMe = (): Todo[] => {
-  return todos.filter(todo => todo.assignedBy.id === "1");
+  return todos.filter(todo => todo.assignedBy.id === "1" && !todo.archived);
+};
+
+// Get archived todos
+export const getArchivedTodos = (): Todo[] => {
+  return todos.filter(todo => 
+    (todo.assignedTo.id === "1" || todo.assignedBy.id === "1") && 
+    todo.archived
+  );
 };
 
 // Get all users except "You"
@@ -142,4 +159,36 @@ export const getOtherUsers = (): User[] => {
 // Get a user by ID
 export const getUserById = (id: string): User | undefined => {
   return users.find(user => user.id === id);
+};
+
+// Toggle todo completion status
+export const toggleTodoCompletion = (id: string): void => {
+  const index = todos.findIndex(todo => todo.id === id);
+  if (index !== -1) {
+    todos[index].completed = !todos[index].completed;
+    
+    if (todos[index].completed) {
+      toast.success("Task marked as completed");
+    } else {
+      toast.info("Task marked as incomplete");
+    }
+  }
+};
+
+// Archive a todo
+export const archiveTodo = (id: string): void => {
+  const index = todos.findIndex(todo => todo.id === id);
+  if (index !== -1) {
+    todos[index].archived = true;
+    toast.info("Task archived");
+  }
+};
+
+// Delete a todo
+export const deleteTodo = (id: string): void => {
+  const index = todos.findIndex(todo => todo.id === id);
+  if (index !== -1) {
+    todos = todos.filter(todo => todo.id !== id);
+    toast.error("Task deleted");
+  }
 };
