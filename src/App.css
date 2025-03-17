@@ -16,6 +16,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  overflow-x: hidden;
 }
 
 .mobile-header {
@@ -28,6 +29,7 @@
 .mobile-content {
   flex: 1;
   padding: 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
 }
 
 .mobile-footer {
@@ -35,6 +37,7 @@
   bottom: 0;
   z-index: 40;
   backdrop-filter: blur(8px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Animation utilities */
@@ -88,4 +91,58 @@
   .pwa-only {
     display: flex;
   }
+}
+
+/* Mobile app specific styles */
+.mobile-card {
+  @apply rounded-xl bg-card border p-4 shadow-sm;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mobile-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Bottom nav special item */
+.bottom-nav-special {
+  transform: translateY(-15px);
+}
+
+/* Pull to refresh animation */
+.ptr-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: var(--text-primary);
+  z-index: 10;
+  text-align: center;
+  height: 50px;
+  transition: all 0.25s ease;
+}
+
+.ptr-element .ptr-icon {
+  display: block;
+  font-size: 30px;
+  transition: all 0.25s ease;
+}
+
+/* Tab transitions */
+.tab-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.tab-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.tab-transition-exit {
+  opacity: 1;
+}
+.tab-transition-exit-active {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 300ms, transform 300ms;
 }

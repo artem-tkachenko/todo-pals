@@ -1,7 +1,6 @@
 
 import { Archive, ClipboardCheck, ListChecks, Plus } from "lucide-react";
 import { ReactNode, useState } from "react";
-import { AnimatedTabs } from "../ui/animated-tabs";
 import { Todo, User } from "@/types/todo";
 import { getUserById } from "@/lib/sample-data";
 import { toast } from "sonner";
@@ -23,10 +22,11 @@ import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface AppLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
+  isSheet?: boolean;
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout({ children, isSheet = false }: AppLayoutProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -81,46 +81,65 @@ export function AppLayout({ children }: AppLayoutProps) {
     }
   ];
   
+  const sidebarContent = (
+    <>
+      <SidebarHeader>
+        <div className="flex items-center justify-between p-4">
+          <h1 className="text-xl font-semibold tracking-tight">TaskFlow</h1>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Tasks</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    isActive={item.isActive} 
+                    onClick={() => item.onClick ? item.onClick() : navigate(item.path)}
+                    tooltip={item.title}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <div className="p-4">
+          <Button variant="outline" className="w-full">
+            <span className="truncate">Settings</span>
+          </Button>
+        </div>
+      </SidebarFooter>
+    </>
+  );
+  
+  if (isSheet) {
+    return (
+      <>
+        {sidebarContent}
+        <CreateTodoModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreateTodo={handleCreateTodo}
+        />
+      </>
+    );
+  }
+  
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="flex min-h-screen bg-background w-full">
         <Sidebar side="left" variant="floating">
-          <SidebarHeader>
-            <div className="flex items-center justify-between p-2">
-              <h1 className="text-xl font-semibold tracking-tight">TaskFlow</h1>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupLabel>Tasks</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {menuItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton 
-                        isActive={item.isActive} 
-                        onClick={() => item.onClick ? item.onClick() : navigate(item.path)}
-                        tooltip={item.title}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter>
-            <div className="p-2">
-              <Button variant="outline" className="w-full">
-                <span className="truncate">Settings</span>
-              </Button>
-            </div>
-          </SidebarFooter>
+          {sidebarContent}
         </Sidebar>
         
-        <div className="flex-1 p-4">
+        <div className="flex-1">
           <main>{children}</main>
         </div>
         
