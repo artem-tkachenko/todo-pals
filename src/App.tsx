@@ -14,6 +14,19 @@ import AuthLayout from "./components/layout/AuthLayout";
 import { AuthProvider } from "./contexts/AuthContext";
 import "./App.css";
 
+// Create a route guard component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  // We'll fetch the auth state from localStorage for the initial check
+  const storedUser = localStorage.getItem('user');
+  
+  if (!storedUser) {
+    // Redirect to the login page if there's no user in localStorage
+    return <Navigate to="/sign-in" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -32,9 +45,9 @@ const App = () => {
               </Route>
               
               {/* App Routes - Protected */}
-              <Route path="/" element={<Index />} />
-              <Route path="/assigned-by-me" element={<AssignedByMe />} />
-              <Route path="/archived" element={<Archived />} />
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/assigned-by-me" element={<ProtectedRoute><AssignedByMe /></ProtectedRoute>} />
+              <Route path="/archived" element={<ProtectedRoute><Archived /></ProtectedRoute>} />
               
               {/* Not Found */}
               <Route path="*" element={<NotFound />} />
