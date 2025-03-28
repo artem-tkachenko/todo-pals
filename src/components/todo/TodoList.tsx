@@ -2,8 +2,9 @@
 import { Todo } from "@/types/todo";
 import { TodoItem } from "./TodoItem";
 import { cn } from "@/lib/utils";
-import { Archive, CheckCircle2, Clock, ClipboardList } from "lucide-react";
+import { Archive, Calendar, ClipboardList } from "lucide-react";
 import { useState } from "react";
+import { format, startOfWeek, isSameWeek, addWeeks, isAfter, isBefore } from "date-fns";
 
 interface TodoListProps {
   todos: Todo[];
@@ -14,14 +15,6 @@ interface TodoListProps {
 
 export function TodoList({ todos, type = "assignedToMe", className, emptyMessage = "No tasks found" }: TodoListProps) {
   const [refresh, setRefresh] = useState(0);
-  
-  const completedTodos = todos.filter((todo) => todo.completed);
-  const pendingTodos = todos.filter((todo) => !todo.completed);
-  
-  // Sort by due date (most urgent first)
-  const sortedPendingTodos = [...pendingTodos].sort((a, b) => 
-    new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-  );
   
   const handleTodoAction = () => {
     setRefresh(prev => prev + 1); // Force a refresh when a todo action occurs
@@ -51,16 +44,43 @@ export function TodoList({ todos, type = "assignedToMe", className, emptyMessage
     );
   }
   
+  const now = new Date();
+  const currentWeekStart = startOfWeek(now, { weekStartsOn: 1 }); // Week starts on Monday
+  const nextWeekStart = addWeeks(currentWeekStart, 1);
+  
+  // Sort by due date (most urgent first)
+  const sortedTodos = [...todos].sort((a, b) => 
+    new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+  );
+  
+  // Group todos by week
+  const thisWeekTodos = sortedTodos.filter(todo => 
+    isSameWeek(new Date(todo.dueDate), now, { weekStartsOn: 1 })
+  );
+  
+  const nextWeekTodos = sortedTodos.filter(todo => 
+    isSameWeek(new Date(todo.dueDate), nextWeekStart, { weekStartsOn: 1 })
+  );
+  
+  const futureWeeksTodos = sortedTodos.filter(todo => 
+    isAfter(new Date(todo.dueDate), addWeeks(currentWeekStart, 1))
+  );
+  
+  const pastTodos = sortedTodos.filter(todo => 
+    isBefore(new Date(todo.dueDate), currentWeekStart)
+  );
+  
   return (
     <div className={cn("space-y-6", className)}>
-      {type !== "archived" && sortedPendingTodos.length > 0 && (
+      {/* This Week */}
+      {thisWeekTodos.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <Clock size={16} />
-            <span>Pending ({sortedPendingTodos.length})</span>
+            <Calendar size={16} />
+            <span>This Week ({thisWeekTodos.length})</span>
           </div>
           <div className="grid gap-3">
-            {sortedPendingTodos.map((todo) => (
+            {thisWeekTodos.map((todo) => (
               <TodoItem 
                 key={`${todo.id}-${refresh}`} 
                 todo={todo} 
@@ -72,27 +92,59 @@ export function TodoList({ todos, type = "assignedToMe", className, emptyMessage
         </div>
       )}
       
-      {(type === "archived" || completedTodos.length > 0) && (
+      {/* Next Week */}
+      {nextWeekTodos.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            {type === "archived" ? (
-              <>
-                <Archive size={16} />
-                <span>Archived ({todos.length})</span>
-              </>
-            ) : (
-              <>
-                <CheckCircle2 size={16} />
-                <span>Completed ({completedTodos.length})</span>
-              </>
-            )}
+            <Calendar size={16} />
+            <span>Next Week ({nextWeekTodos.length})</span>
           </div>
           <div className="grid gap-3">
-            {(type === "archived" ? todos : completedTodos).map((todo) => (
+            {nextWeekTodos.map((todo) => (
               <TodoItem 
                 key={`${todo.id}-${refresh}`} 
                 todo={todo} 
-                type={type}
+                type={type} 
+                onAction={handleTodoAction}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Future Weeks */}
+      {futureWeeksTodos.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <Calendar size={16} />
+            <span>Future ({futureWeeksTodos.length})</span>
+          </div>
+          <div className="grid gap-3">
+            {futureWeeksTodos.map((todo) => (
+              <TodoItem 
+                key={`${todo.id}-${refresh}`} 
+                todo={todo} 
+                type={type} 
+                onAction={handleTodoAction}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Past Due */}
+      {pastTodos.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <Calendar size={16} />
+            <span>Past Due ({pastTodos.length})</span>
+          </div>
+          <div className="grid gap-3">
+            {pastTodos.map((todo) => (
+              <TodoItem 
+                key={`${todo.id}-${refresh}`} 
+                todo={todo} 
+                type={type} 
                 onAction={handleTodoAction}
               />
             ))}

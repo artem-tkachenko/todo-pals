@@ -123,15 +123,27 @@ export function TodoItem({ todo, type, onAction }: TodoItemProps) {
             
             {type !== "archived" && (
               <div className="flex gap-1">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-7 w-7"
-                  onClick={handleArchive}
-                  aria-label="Archive task"
-                >
-                  <Archive size={14} />
-                </Button>
+                {todo.completed ? (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={handleArchive}
+                    aria-label="Archive task"
+                  >
+                    <Archive size={14} />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-7 w-7 text-primary"
+                    onClick={handleToggleCompletion}
+                    aria-label="Complete task"
+                  >
+                    <CheckCircle2 size={14} />
+                  </Button>
+                )}
                 
                 <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                   <AlertDialogTrigger asChild>
