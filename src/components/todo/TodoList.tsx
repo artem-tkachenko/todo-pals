@@ -69,6 +69,11 @@ export function TodoList({ todos, type = "assignedToMe", className, emptyMessage
   const pastTodos = sortedTodos.filter(todo => 
     isBefore(new Date(todo.dueDate), currentWeekStart)
   );
+
+  // Format date ranges for each section
+  const thisWeekRange = `${format(currentWeekStart, 'MMM d')} - ${format(addWeeks(currentWeekStart, 1).setDate(addWeeks(currentWeekStart, 1).getDate() - 1), 'MMM d')}`;
+  const nextWeekRange = `${format(nextWeekStart, 'MMM d')} - ${format(addWeeks(nextWeekStart, 1).setDate(addWeeks(nextWeekStart, 1).getDate() - 1), 'MMM d')}`;
+  const pastRange = `Before ${format(currentWeekStart, 'MMM d')}`;
   
   return (
     <div className={cn("space-y-6", className)}>
@@ -77,7 +82,7 @@ export function TodoList({ todos, type = "assignedToMe", className, emptyMessage
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Calendar size={16} />
-            <span>This Week ({thisWeekTodos.length})</span>
+            <span>{thisWeekRange} ({thisWeekTodos.length})</span>
           </div>
           <div className="grid gap-3">
             {thisWeekTodos.map((todo) => (
@@ -97,7 +102,7 @@ export function TodoList({ todos, type = "assignedToMe", className, emptyMessage
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Calendar size={16} />
-            <span>Next Week ({nextWeekTodos.length})</span>
+            <span>{nextWeekRange} ({nextWeekTodos.length})</span>
           </div>
           <div className="grid gap-3">
             {nextWeekTodos.map((todo) => (
@@ -117,7 +122,7 @@ export function TodoList({ todos, type = "assignedToMe", className, emptyMessage
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Calendar size={16} />
-            <span>Future ({futureWeeksTodos.length})</span>
+            <span>After {format(addWeeks(nextWeekStart, 1).setDate(addWeeks(nextWeekStart, 1).getDate() - 1), 'MMM d')} ({futureWeeksTodos.length})</span>
           </div>
           <div className="grid gap-3">
             {futureWeeksTodos.map((todo) => (
@@ -137,7 +142,7 @@ export function TodoList({ todos, type = "assignedToMe", className, emptyMessage
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Calendar size={16} />
-            <span>Past Due ({pastTodos.length})</span>
+            <span>{pastRange} ({pastTodos.length})</span>
           </div>
           <div className="grid gap-3">
             {pastTodos.map((todo) => (

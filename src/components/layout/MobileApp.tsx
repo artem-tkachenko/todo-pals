@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { MobileHeader } from "./MobileHeader";
 import { BottomNav } from "./BottomNav";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MobileAppProps {
   children: ReactNode;
@@ -17,8 +18,12 @@ export function MobileApp({ children, title, className }: MobileAppProps) {
         <MobileHeader title={title} showMenu={false} />
       </header>
       
-      <main className={cn("mobile-content pb-20", className)}>
-        {children}
+      <main className="h-[calc(100vh-8rem)] overflow-hidden">
+        <ScrollArea className="h-full pb-6">
+          <div className={cn("mobile-content", className)}>
+            {children}
+          </div>
+        </ScrollArea>
       </main>
       
       <footer className="mobile-footer">
