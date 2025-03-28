@@ -59,7 +59,8 @@ export function TodoItem({ todo, type, onAction }: TodoItemProps) {
     <div 
       className={cn(
         "relative overflow-hidden rounded-xl border bg-card p-4 transition-all duration-300",
-        todo.completed && "opacity-75"
+        todo.completed && "opacity-75",
+        isOverdue && !todo.completed && "border-destructive border-2 bg-destructive/5"
       )}
     >      
       <div className="flex items-start gap-4">
