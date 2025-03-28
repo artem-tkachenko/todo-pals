@@ -143,6 +143,16 @@ export const getTodosAssignedByMe = (): Todo[] => {
   return todos.filter(todo => todo.assignedBy.id === "1" && !todo.archived);
 };
 
+// Get todos by user ID
+export const getTodosByUser = (userId: string): Todo[] => {
+  return todos.filter(todo => todo.assignedTo.id === userId && !todo.archived);
+};
+
+// Get todos assigned by user ID
+export const getAssignedByUser = (userId: string): Todo[] => {
+  return todos.filter(todo => todo.assignedBy.id === userId && !todo.archived);
+};
+
 // Get archived todos
 export const getArchivedTodos = (): Todo[] => {
   return todos.filter(todo => 
@@ -191,4 +201,22 @@ export const deleteTodo = (id: string): void => {
     todos = todos.filter(todo => todo.id !== id);
     toast.error("Task deleted");
   }
+};
+
+// Find or create a user by email
+export const findOrCreateUserByEmail = (email: string): User => {
+  const existingUser = users.find(user => user.email.toLowerCase() === email.toLowerCase());
+  if (existingUser) return existingUser;
+  
+  // Create a new user
+  const name = email.split('@')[0].replace(/\./g, ' ');
+  const newUser: User = {
+    id: `user-${Date.now()}`,
+    name: name.charAt(0).toUpperCase() + name.slice(1),
+    email: email,
+    avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`
+  };
+  
+  users.push(newUser);
+  return newUser;
 };

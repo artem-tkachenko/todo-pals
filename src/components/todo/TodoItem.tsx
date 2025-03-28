@@ -58,12 +58,10 @@ export function TodoItem({ todo, type, onAction }: TodoItemProps) {
   return (
     <div 
       className={cn(
-        "group relative overflow-hidden rounded-xl border bg-card p-4 transition-all duration-300 animate-in hover:shadow-md",
+        "relative overflow-hidden rounded-xl border bg-card p-4 transition-all duration-300",
         todo.completed && "opacity-75"
       )}
-    >
-      <div className="absolute inset-0 opacity-0 bg-gradient-to-r from-transparent to-primary/5 group-hover:opacity-100 transition-opacity duration-300" />
-      
+    >      
       <div className="flex items-start gap-4">
         <button 
           className="mt-1 flex-shrink-0 text-muted-foreground hover:text-primary transition-colors"
@@ -124,9 +122,9 @@ export function TodoItem({ todo, type, onAction }: TodoItemProps) {
             </div>
             
             {type !== "archived" && (
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex gap-1">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="icon"
                   className="h-7 w-7"
                   onClick={handleArchive}
@@ -138,9 +136,9 @@ export function TodoItem({ todo, type, onAction }: TodoItemProps) {
                 <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                   <AlertDialogTrigger asChild>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
-                      className="h-7 w-7 text-destructive hover:text-destructive/90"
+                      className="h-7 w-7 text-destructive"
                       aria-label="Delete task"
                     >
                       <Trash2 size={14} />

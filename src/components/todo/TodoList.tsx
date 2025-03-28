@@ -7,11 +7,12 @@ import { useState } from "react";
 
 interface TodoListProps {
   todos: Todo[];
-  type: "assignedToMe" | "assignedByMe" | "archived";
+  type?: "assignedToMe" | "assignedByMe" | "archived";
   className?: string;
+  emptyMessage?: string;
 }
 
-export function TodoList({ todos, type, className }: TodoListProps) {
+export function TodoList({ todos, type = "assignedToMe", className, emptyMessage = "No tasks found" }: TodoListProps) {
   const [refresh, setRefresh] = useState(0);
   
   const completedTodos = todos.filter((todo) => todo.completed);
@@ -37,7 +38,7 @@ export function TodoList({ todos, type, className }: TodoListProps) {
           )}
         </div>
         <h3 className="text-lg font-medium">
-          {type === "archived" ? "No archived tasks" : "No tasks found"}
+          {emptyMessage}
         </h3>
         <p className="text-sm text-muted-foreground mt-1">
           {type === "assignedToMe" 
