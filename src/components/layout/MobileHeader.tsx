@@ -3,6 +3,7 @@ import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { AppLayout } from "./AppLayout";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 interface MobileHeaderProps {
   title: string;
@@ -22,7 +23,9 @@ export function MobileHeader({ title, showMenu = true }: MobileHeaderProps) {
             </button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0">
-            <AppLayout isSheet>{null}</AppLayout>
+            <SidebarProvider>
+              <AppLayout isSheet>{null}</AppLayout>
+            </SidebarProvider>
           </SheetContent>
         </Sheet>
       )}
